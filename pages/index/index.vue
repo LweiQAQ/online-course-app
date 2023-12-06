@@ -1,5 +1,5 @@
 <template>
-	<view class="content">
+	<view class="content" >
 		<Header></Header>
 		<view class="toBar">
 			<u-tabs :list="toBar" :current="current"
@@ -16,9 +16,11 @@
 			></u-tabs>
 		</view>
 		<view class="swiper">
-			<swiper :duration="500" :current="current" @change="changeSwiper" style="height: 1000px;" disabled=false>
+			<swiper :duration="500" :current="current" @change="changeSwiper" :style="'height:'+swiperHeight+'px'" disabled=false>
 				<swiper-item v-for="(item,index) in toBar" :key="index" @touchmove.stop >
-					<component :is="activeCom" v-if="index === current"></component>
+					<scroll-view scroll-y="true" :style="'height:'+swiperHeight+'px'">
+						<component :is="activeCom" v-if="index === current"></component>
+					</scroll-view>
 				</swiper-item>
 			</swiper>
 		</view>
@@ -41,6 +43,7 @@ import actualCombat from '../../components/home/actualCombat.vue'
 		},
 		data() {
 			return {
+				swiperHeight:0,
 				title: 'Hello',
 				toBar: [{
 					name: '今日推荐'
@@ -62,7 +65,24 @@ import actualCombat from '../../components/home/actualCombat.vue'
 		onLoad() {
 			
 		},
-		
+		onReady() {
+			let searchHeight = 0;
+			let tabsHeight = 0;
+			let searchView = uni.createSelectorQuery().select('.header-search');
+			searchView.boundingClientRect(data =>{
+				searchHeight = data.height; 
+			}).exec();
+			let toBarView = uni.createSelectorQuery().select('.toBar');;
+			toBarView.boundingClientRect(data =>{
+				tabsHeight = data.height; 
+			}).exec();
+			let that = this;
+			uni.getSystemInfo({
+				success(res) {
+					that.swiperHeight = res.windowHeight - searchHeight - tabsHeight
+				}
+			})
+		},
 		methods: {
 			changeTabs({index}){
 				this.current = index
@@ -90,7 +110,15 @@ import actualCombat from '../../components/home/actualCombat.vue'
 </script>
 
 <style>
-	.swiper{
-		padding: 29rpx;
+/deep/ .u-tabs__wrapper__nav__item__text{
+	font-size: 29rpx;
+	font-weight: 400;
+}
+	
+	
+	/deep/ ::-webkit-scrollbar{
+		display: block;
+		width: 0px !important;
+		height: 0px !important;
 	}
 </style>

@@ -56,18 +56,45 @@
 				</scroll-view>
 			</view>
 		</view>
+		<view class="every-watch">
+				<h3>大家都在看</h3>
+				<span>查看更多</span>
+		</view>
+		<view class="re-new-list" v-for="(item,index) in everyList" :key="index">
+			<view class="re-new-list-img">
+				<image :src="item.courseCover" ></image>
+			</view>
+			<view class="re-new-list-content">
+				<view class="re-new-list-content-title">
+					<p>{{item.courseName}}</p>
+				</view>
+				<view class="re-new-list-content-class">
+					<span>零基础课程</span>
+				</view>
+				<view class="re-new-list-content-info">
+					<view class="re-new-list-content-info-pay">
+						<span>限时优惠</span>
+						<span class="price">￥{{item.discountPrice}}</span>
+					</view>
+					<view class="re-new-list-content-info-people">
+						<span>{{item.clicks}}人学习</span>
+					</view>
+				</view>
+			</view>
+		</view>
 	</view>
 </template>
 
 <script>
 	import {getSliders} from '../../api/home.js'
-	import {getMostNew} from '../../api/course.js'
+	import {getMostNew,searchCourse} from '../../api/course.js'
 	export default {
 		data() {
 			return {
 				list: [],
 				newList:[],
-				reList:[]
+				reList:[],
+				everyList:[]
 			}
 		},
 		created() {
@@ -83,6 +110,9 @@
 			})
 			getMostNew({pageNum:1,pageSize:10}).then(res =>{
 				this.reList = res.pageInfo.list
+			})
+			searchCourse({pageNum:1,pageSize:3,entity:{sortBy:'click-asc'}}).then(res =>{
+				this.everyList = res.pageInfo.list
 				uni.hideLoading()
 			})
 		}
@@ -90,7 +120,11 @@
 </script>
 
 <style lang="scss">
+	.re-swiper{
+		padding: 14rpx;
+	}
 	.re-new{
+		padding: 14rpx;
 		padding-top: 40rpx;
 		display: flex;
 		justify-content: space-between;
@@ -110,6 +144,7 @@
 		align-items: center;
 		position: relative;
 		margin-top: 40rpx;
+		padding: 14rpx;
 		.re-new-list-img{
 			width: 237rpx;
 			height: 186rpx;
@@ -173,6 +208,10 @@
 	.re-new-list-content-info-people{
 		font-size: 19rpx;
 		color: #9499a0;
+	}
+	
+	.course{
+		padding: 14rpx;
 	}
 	
 	.course-title{
@@ -250,5 +289,35 @@
 		font-size: 25rpx;
 		font-weight: 600;
 		margin-top: 10rpx;
+	}
+	
+	.re-new{
+		padding-top: 40rpx;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		h3{
+			font-weight: 400;
+		}
+		span{
+			font-size: 25rpx;
+			color: #9499a0;
+		}
+	}
+	
+	.every-watch{
+		padding: 14rpx;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		position: relative;
+		margin-top: 40rpx;
+		h3{
+			font-weight: 400;
+		}
+		span{
+			font-size: 25rpx;
+			color: #9499a0;
+		}
 	}
 </style>
